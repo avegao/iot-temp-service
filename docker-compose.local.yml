@@ -1,23 +1,30 @@
 version: "3.1"
 
 services:
-  iot-go:
+  iot-temp-service:
     image: avegao/iot-temp-service:local
-    container_name: iot_temp_service
-    command: --debug
+    container_name: iot-temp-service
+    command: --debug --iot_arduino_server_addr=iot-arduino-temp-service:50000
     build:
       dockerfile: ./Dockerfile
       context: .
+    networks:
+      - iot-temp
+      - iot-arduino-temp
     ports:
        - "50000:50000"
+#    depends_on:
+#      - iot-arduino-temp-service
+#
+#  iot-arduino-temp-service:
+#     image: avegao/iot-arduino-temp-service:local
+#     container_name: iot-arduino-temp-service
+#     command: --debug
+#     networks:
+#       - iot-arduino-temp
 
-#  iot-mysql:
-#    image: mariadb:10.1.23
-#    container_name: iot_mysql
-#    ports:
-#      - "3306:3306"
-#    environment:
-#      MYSQL_DATABASE: "iot"
-#      MYSQL_USER: "iot"
-#      MYSQL_PASSWORD: "iot"
-#      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+networks:
+  iot-temp:
+  iot-arduino-temp:
+    external:
+      name: iotarduino_iot-arduino-temp
