@@ -24,10 +24,12 @@ EXECUTE PROCEDURE update_updated_at_column();
 CREATE TABLE "public"."rooms" (
   "id"         SERIAL8,
   "name"       VARCHAR(255)   NOT NULL,
+  "id_zone"    INT8           NOT NULL,
   "created_at" TIMESTAMPTZ(0) NOT NULL DEFAULT NOW(),
   "updated_at" TIMESTAMPTZ(0) NOT NULL DEFAULT NOW(),
   "deleted_at" TIMESTAMPTZ(0),
-  CONSTRAINT pk_rooms PRIMARY KEY ("id")
+  CONSTRAINT pk_rooms PRIMARY KEY ("id"),
+  CONSTRAINT fk_rooms_zones FOREIGN KEY ("id_zone") REFERENCES "public"."zones" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 CREATE TRIGGER "tg_rooms_updated_at"
@@ -61,7 +63,9 @@ EXECUTE PROCEDURE update_updated_at_column();
 CREATE TABLE "public"."devices_thermostats" (
   "auto" BOOLEAN NOT NULL DEFAULT FALSE,
   "min_temperature" NUMERIC(4, 2) NULL DEFAULT NULL,
-  CONSTRAINT pk_devices_thermostats PRIMARY KEY ("id")
+  CONSTRAINT pk_devices_thermostats PRIMARY KEY ("id"),
+  CONSTRAINT fk_devices_thermostats_zones FOREIGN KEY ("id_zone") REFERENCES "public"."zones" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT fk_devices_thermostats_rooms FOREIGN KEY ("id_room") REFERENCES "public"."rooms" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 ) INHERITS ("public"."devices");
 
 CREATE TRIGGER "tg_devices_thermostats_updated_at"
