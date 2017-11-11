@@ -2,15 +2,14 @@ package arduino
 
 import (
     "google.golang.org/grpc"
-    "github.com/sirupsen/logrus"
     "github.com/avegao/iot-temp-service/resource/grpc"
     "golang.org/x/net/context"
+    "github.com/avegao/iot-temp-service/util"
 )
 
 var (
     connection *grpc.ClientConn
     client     arduino_service.ArduinoClient
-    Address string
 )
 
 func createConnection() {
@@ -31,15 +30,15 @@ func createConnection() {
 
     grpcOptions = append(grpcOptions, grpc.WithInsecure())
 
-    newConnection, err := grpc.Dial(Address, grpcOptions...)
+    newConnection, err := grpc.Dial(*util.IotArduinoTempServerAddress, grpcOptions...)
 
     if nil != err {
-        logrus.WithError(err).Fatalf("Fail to connect with %s", Address)
+        util.Log.WithError(err).Fatalf("Fail to connect with %s", *util.IotArduinoTempServerAddress)
     }
 
     connection = newConnection
 
-    logrus.Debugf("gRPC connection status with %s = %s", Address, connection.GetState().String())
+    util.Log.Debugf("gRPC connection status with %s = %s", *util.IotArduinoTempServerAddress, connection.GetState().String())
 }
 
 func CloseConnection() {
@@ -54,7 +53,7 @@ func createClient() {
     }
 
     if nil == connection {
-        logrus.Panic("connection null")
+        util.Log.Panic("connection null")
     }
 
     client = arduino_service.NewArduinoClient(connection)
@@ -65,8 +64,7 @@ func checkClientStatus() {
         createClient()
     }
 
-    state := connection.GetState().String()
-    logrus.Debugf("gRPC connection status with %s = %s", Address, state)
+    util.Log.Debugf("gRPC connection status with %s = %s", *util.IotArduinoTempServerAddress, connection.GetState())
 }
 
 func GetTemperature(request arduino_service.ArduinoRequest) (float32, error) {
@@ -97,7 +95,6 @@ func PowerOff(request arduino_service.ArduinoRequest) (bool, error) {
     return response.Power, err
 }
 
-
 func PowerOn(request arduino_service.ArduinoRequest) (bool, error) {
     checkClientStatus()
 
@@ -105,4 +102,3 @@ func PowerOn(request arduino_service.ArduinoRequest) (bool, error) {
 
     return response.Power, err
 }
-

@@ -14,7 +14,7 @@ COPY ./ ./
 ARG VCS_REF="unknown"
 ARG BUILD_DATE="unknown"
 
-RUN go install -ldflags "-X main.buildDate=$BUILD_DATE -X main.commmitHash=$VCS_REF"
+RUN go install -ldflags "-X main.buildDate=$BUILD_DATE -X main.commitHash=$VCS_REF"
 
 ########################################################################################################################
 
