@@ -1,14 +1,22 @@
 package util
 
-import "time"
+import (
+    "time"
+    "github.com/lib/pq"
+    "github.com/sirupsen/logrus"
+)
 
 type Entity struct {
-    ID uint64
+    ID        uint64
     CreatedAt time.Time
     UpdatedAt time.Time
 }
 
 type SoftDeletableEntity struct {
     Entity
-    DeletedAt time.Time
+    DeletedAt pq.NullTime
+}
+
+func LogQuery(query string, parameters map[string]interface{}) {
+    Log.WithFields(logrus.Fields{"query": query, "parameters": parameters}).Debugf("Query executed")
 }
