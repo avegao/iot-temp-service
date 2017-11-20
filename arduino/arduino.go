@@ -10,6 +10,7 @@ import (
 var (
     connection *grpc.ClientConn
     client     arduino_service.ArduinoClient
+    address    string
 )
 
 func createConnection() {
@@ -29,16 +30,16 @@ func createConnection() {
     //}
 
     grpcOptions = append(grpcOptions, grpc.WithInsecure())
-
-    newConnection, err := grpc.Dial(*util.IotArduinoTempServerAddress, grpcOptions...)
+    address = util.FromGeneric(util.GetContainer().GetParameter("iot_arduino_temp_server_address"))
+    newConnection, err := grpc.Dial(address, grpcOptions...)
 
     if nil != err {
-        util.Log.WithError(err).Fatalf("Fail to connect with %s", *util.IotArduinoTempServerAddress)
+        util.GetContainer().GetLogger().WithError(err).Fatalf("Fail to connect with %s", address)
     }
 
     connection = newConnection
 
-    util.Log.Debugf("gRPC connection status with %s = %s", *util.IotArduinoTempServerAddress, connection.GetState().String())
+    util.GetContainer().GetLogger().Debugf("gRPC connection status with %v = %s", address, connection.GetState().String())
 }
 
 func CloseConnection() {
@@ -53,7 +54,7 @@ func createClient() {
     }
 
     if nil == connection {
-        util.Log.Panic("connection null")
+        util.GetContainer().GetLogger().Panic("connection null")
     }
 
     client = arduino_service.NewArduinoClient(connection)
@@ -64,7 +65,7 @@ func checkClientStatus() {
         createClient()
     }
 
-    util.Log.Debugf("gRPC connection status with %s = %s", *util.IotArduinoTempServerAddress, connection.GetState())
+    util.GetContainer().GetLogger().Debugf("gRPC connection status with %v = %s", address, connection.GetState())
 }
 
 func GetTemperature(request arduino_service.ArduinoRequest) (float32, error) {

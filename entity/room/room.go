@@ -15,6 +15,5 @@ func (room Room) String() string {
 }
 
 func (room Room) GetZone() (zone.Zone, error) {
-
     return new(zone.Repository).FindOneByRoomId(room.ID)
 }

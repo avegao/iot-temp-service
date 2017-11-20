@@ -8,70 +8,70 @@ import (
     "fmt"
 )
 
-type ThermostatBuilderInterface interface {
+type BuilderInterface interface {
     Build() Thermostat
-    SetId(id uint64) thermostatBuilder
-    SetName(name string) thermostatBuilder
-    SetAddress(address string) thermostatBuilder
-    SetPort(port int) thermostatBuilder
-    SetAuto(auto bool) thermostatBuilder
-    SetMinTemperature(temperature float32) thermostatBuilder
+    SetId(id uint64) Builder
+    SetName(name string) Builder
+    SetAddress(address string) Builder
+    SetPort(port int) Builder
+    SetAuto(auto bool) Builder
+    SetMinTemperature(temperature float32) Builder
 }
 
-type thermostatBuilder struct {
-    ThermostatBuilderInterface
+type Builder struct {
+    BuilderInterface
     thermostat Thermostat
 }
 
-func (builder thermostatBuilder) SetId(id uint64) thermostatBuilder {
+func (builder Builder) SetId(id uint64) Builder {
     builder.thermostat.ID = id
 
     return builder
 }
 
-func (builder thermostatBuilder) SetName(name string) thermostatBuilder {
+func (builder Builder) SetName(name string) Builder {
     builder.thermostat.Name = name
 
     return builder
 }
 
-func (builder thermostatBuilder) SetAddress(address string) thermostatBuilder {
+func (builder Builder) SetAddress(address string) Builder {
     builder.thermostat.Address = address
 
     return builder
 }
 
-func (builder thermostatBuilder) SetPort(port int) thermostatBuilder {
+func (builder Builder) SetPort(port int) Builder {
     builder.thermostat.Port = port
 
     return builder
 }
 
-func (builder thermostatBuilder) SetTypeArduino() thermostatBuilder {
+func (builder Builder) SetTypeArduino() Builder {
     builder.thermostat.Type = device.Arduino
 
     return builder
 }
 
-func (builder thermostatBuilder) SetTypeRaspberryPi() thermostatBuilder {
+func (builder Builder) SetTypeRaspberryPi() Builder {
     builder.thermostat.Type = device.RaspberryPi
 
     return builder
 }
 
-func (builder thermostatBuilder) SetAuto(auto bool) thermostatBuilder {
+func (builder Builder) SetAuto(auto bool) Builder {
     builder.thermostat.Auto = auto
 
     return builder
 }
 
-func (builder thermostatBuilder) SetMinTemperature(temperature float32) thermostatBuilder {
+func (builder Builder) SetMinTemperature(temperature float32) Builder {
     builder.thermostat.MinTemperature = temperature
 
     return builder
 }
 
-func (builder thermostatBuilder) Build() (Thermostat, error) {
+func (builder Builder) Build() (Thermostat, error) {
     if builder.thermostat.ID < 0 {
         logrus.Warnf("ID must be >= 0. Setting to 0. This result on a new device.")
 
@@ -103,6 +103,6 @@ func (builder thermostatBuilder) Build() (Thermostat, error) {
     return builder.thermostat, nil
 }
 
-func New() thermostatBuilder {
-    return thermostatBuilder{}
+func New() Builder {
+    return Builder{}
 }

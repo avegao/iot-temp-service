@@ -13,6 +13,11 @@ services:
       - iot-arduino-temp
     ports:
        - "50000:50000"
+    environment:
+      PGSQL_HOST: "192.168.1.177"
+      PGSQL_USERNAME: "iot_temp"
+      PGSQL_PASSWORD: "C7fJafnH6bQ7Cnmd"
+      PGSQL_DATABASE: "iot"
 #    depends_on:
 #      - iot-arduino-temp-service
 #

@@ -18,5 +18,5 @@ type SoftDeletableEntity struct {
 }
 
 func LogQuery(query string, parameters map[string]interface{}) {
-    Log.WithFields(logrus.Fields{"query": query, "parameters": parameters}).Debugf("Query executed")
+    GetContainer().GetLogger().WithFields(logrus.Fields{"query": query, "parameters": parameters}).Debugf("Query executed")
 }

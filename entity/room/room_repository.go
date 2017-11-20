@@ -3,6 +3,7 @@ package room
 import (
     "errors"
     "github.com/avegao/iot-temp-service/util"
+    "database/sql"
 )
 
 type RepositoryInterface interface {
@@ -15,6 +16,7 @@ type RepositoryInterface interface {
 
 type Repository struct {
     RepositoryInterface
+    DB sql.DB
 }
 
 func (repository Repository) FindOneById(id uint64) (Room, error) {
@@ -22,7 +24,7 @@ func (repository Repository) FindOneById(id uint64) (Room, error) {
 
     util.LogQuery(query, map[string]interface{}{"id": id})
 
-    row := util.Pgsql.QueryRow(query, id)
+    row := repository.DB.QueryRow(query, id)
     room := new(Room)
     err := row.Scan(
         &room.ID,
@@ -38,7 +40,7 @@ func (repository Repository) FindAll() ([]Room, error) {
 
     util.LogQuery(query, nil)
 
-    rows, err := util.Pgsql.Query(query)
+    rows, err := repository.DB.Query(query)
 
     if nil != err {
         return *new([]Room), err

@@ -1,6 +1,9 @@
 package util
 
-import "strings"
+import (
+	"strings"
+	"fmt"
+)
 
 func FromIso8859_1toUtf8(iso8859_1_buf []byte) string {
 	buf := make([]rune, len(iso8859_1_buf))
@@ -12,4 +15,10 @@ func FromIso8859_1toUtf8(iso8859_1_buf []byte) string {
 
 func Empty(value string) bool {
 	return "" == strings.TrimSpace(value)
+}
+
+func FromGeneric(generic interface{}) string {
+	to := fmt.Sprintf("%v", generic)
+
+	return strings.TrimSpace(to)
 }

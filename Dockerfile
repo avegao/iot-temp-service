@@ -2,7 +2,9 @@ FROM golang:1.9.2-alpine AS build
 
 WORKDIR /go/src/github.com/avegao/iot-temp-service
 
-RUN apk add --no-cache --update git glide
+RUN apk add --no-cache --update \
+    git \
+    glide
 
 COPY glide.yaml glide.yaml
 COPY glide.lock glide.lock
@@ -14,7 +16,9 @@ COPY ./ ./
 ARG VCS_REF="unknown"
 ARG BUILD_DATE="unknown"
 
-RUN go install -ldflags "-X main.buildDate=$BUILD_DATE -X main.commitHash=$VCS_REF"
+RUN go test ./... -cover &&\
+    go install \
+        -ldflags "-X main.buildDate=$BUILD_DATE -X main.commitHash=$VCS_REF"
 
 ########################################################################################################################
 

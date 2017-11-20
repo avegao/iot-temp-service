@@ -3,6 +3,7 @@ package zone
 import (
     "errors"
     "github.com/avegao/iot-temp-service/util"
+    "database/sql"
 )
 
 type repositoryInterface interface {
@@ -16,6 +17,7 @@ type repositoryInterface interface {
 
 type Repository struct {
     repositoryInterface
+    DB sql.DB
 }
 
 func (repository Repository) FindOneById(id uint64) (Zone, error) {
@@ -23,7 +25,7 @@ func (repository Repository) FindOneById(id uint64) (Zone, error) {
 
     util.LogQuery(query, map[string]interface{}{"id": id})
 
-    row := util.Pgsql.QueryRow(query, id)
+    row := repository.DB.QueryRow(query, id)
     zone := new(Zone)
     err := row.Scan(
         &zone.ID,
@@ -39,7 +41,7 @@ func (repository Repository) FindAll() ([]Zone, error) {
 
     util.LogQuery(query, nil)
 
-    rows, err := util.Pgsql.Query(query)
+    rows, err := repository.DB.Query(query)
 
     if nil != err {
         return *new([]Zone), err
@@ -79,7 +81,7 @@ func (repository Repository) FindOneByRoomId(id uint64) (Zone, error) {
 
     util.LogQuery(query, map[string]interface{}{"id": id})
 
-    row := util.Pgsql.QueryRow(query, id)
+    row := repository.DB.QueryRow(query, id)
     zone := new(Zone)
     err := row.Scan(
         &zone.ID,

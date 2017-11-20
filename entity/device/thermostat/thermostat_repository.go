@@ -35,9 +35,15 @@ func (repository Repository) FindOneById(id uint64) (Thermostat, error) {
 
     util.LogQuery(query, map[string]interface{}{"id": id})
 
-    row := util.Pgsql.QueryRow(query, id)
+    database, err := util.GetContainer().GetDatabase("pgsql")
+
+    if nil != err {
+        return Thermostat{}, err
+    }
+
+    row := database.QueryRow(query, id)
     thermostat := new(Thermostat)
-    err := row.Scan(
+    err = row.Scan(
         &thermostat.ID,
         &thermostat.Name,
         &thermostat.Address,

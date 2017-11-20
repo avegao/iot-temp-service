@@ -1,34 +1,28 @@
-hash: cd49ed20e922864c3bbb3eb707ca53d48cf5d519693be701b0865fe97c1c53e6
-updated: 2017-11-10T12:58:33.007046+01:00
+hash: 683aebfd032edbdbe8f6bcab3a3bf1b3f5fefa5b723dacb4f4979a8f18560172
+updated: 2017-11-16T19:55:35.540285+01:00
 imports:
-- name: github.com/go-pg/pg
-  version: f7825ca79b63ead4417c219bba98a85b198bf605
-  subpackages:
-  - internal
-  - internal/parser
-  - internal/pool
-  - orm
-  - types
 - name: github.com/golang/protobuf
-  version: 1643683e1b54a9e88ad26d98f81400c8c9d9f4f9
+  version: 1e59b77b52bf8e4b449a57e6f79f21226d571845
   subpackages:
   - proto
   - ptypes
   - ptypes/any
   - ptypes/duration
   - ptypes/timestamp
-- name: github.com/jinzhu/inflection
-  version: 1c35d901db3da928c72a72d8458480cc9ade058f
 - name: github.com/lib/pq
-  version: b609790bd85edf8e9ab7e0f8912750a786177bcf
+  version: 8c6ee72f3e6bcb1542298dd5f76cb74af9742cec
+  subpackages:
+  - oid
 - name: github.com/sirupsen/logrus
   version: f006c2ac4710855cf0f916dd6b77acf6b048dc6e
+- name: github.com/stretchr/testify
+  version: 69483b4bd14f5845b5a1e55bca19e954e827f1d0
 - name: golang.org/x/crypto
-  version: 6a293f2d4b14b8e6d3f0539e383f6d0d30fce3fd
+  version: 9f005a07e0d31d45e6656d241bb5c0f2efd4bc94
   subpackages:
   - ssh/terminal
 - name: golang.org/x/net
-  version: a337091b0525af65de94df2eb7e98bd9962dcbe2
+  version: 9dfe39835686865bff950a07b394c12a98ddc811
   subpackages:
   - context
   - http2
@@ -38,7 +32,7 @@ imports:
   - lex/httplex
   - trace
 - name: golang.org/x/sys
-  version: 1e2299c37cc91a509f1b12369872d27be0ce98a6
+  version: bf42f188b9bc6f2cf5b8ee5a912ef1aedd0eba4c
   subpackages:
   - unix
   - windows
@@ -54,7 +48,7 @@ imports:
   subpackages:
   - googleapis/rpc/status
 - name: google.golang.org/grpc
-  version: 5ffe3083946d5603a0578721101dc8165b1d5b5f
+  version: 401e0e00e4bb830a10496d64cd95e068c5bf50de
   subpackages:
   - balancer
   - codes
