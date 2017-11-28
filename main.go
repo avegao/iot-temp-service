@@ -4,6 +4,7 @@ import (
     "database/sql"
     "flag"
     "fmt"
+    "github.com/avegao/gocondi"
     "github.com/avegao/iot-temp-service/arduino"
     "github.com/avegao/iot-temp-service/controller/default"
     pb "github.com/avegao/iot-temp-service/resource/grpc/iot_temp"
@@ -26,12 +27,12 @@ var (
     grcpPort                    = flag.Int("port", 50000, "gRPC Server port. Default = 50000")
     buildDate                   string
     commitHash                  string
-    container                   *util.Container
+    container                   *gocondi.Container
     server                      *grpc.Server
 )
 
 func initContainer() {
-    container = util.GetContainer()
+    container = gocondi.GetContainer()
 
     flag.Parse()
 

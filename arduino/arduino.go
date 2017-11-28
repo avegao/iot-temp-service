@@ -1,6 +1,7 @@
 package arduino
 
 import (
+    "github.com/avegao/gocondi"
     "google.golang.org/grpc"
     "github.com/avegao/iot-temp-service/resource/grpc"
     "golang.org/x/net/context"
@@ -30,16 +31,16 @@ func createConnection() {
     //}
 
     grpcOptions = append(grpcOptions, grpc.WithInsecure())
-    address = util.FromGeneric(util.GetContainer().GetParameter("iot_arduino_temp_server_address"))
+    address = util.FromGeneric(gocondi.GetContainer().GetParameter("iot_arduino_temp_server_address"))
     newConnection, err := grpc.Dial(address, grpcOptions...)
 
     if nil != err {
-        util.GetContainer().GetLogger().WithError(err).Fatalf("Fail to connect with %s", address)
+        gocondi.GetContainer().GetLogger().WithError(err).Fatalf("Fail to connect with %s", address)
     }
 
     connection = newConnection
 
-    util.GetContainer().GetLogger().Debugf("gRPC connection status with %v = %s", address, connection.GetState().String())
+    gocondi.GetContainer().GetLogger().Debugf("gRPC connection status with %v = %s", address, connection.GetState().String())
 }
 
 func CloseConnection() {
@@ -54,7 +55,7 @@ func createClient() {
     }
 
     if nil == connection {
-        util.GetContainer().GetLogger().Panic("connection null")
+        gocondi.GetContainer().GetLogger().Panic("connection null")
     }
 
     client = arduino_service.NewArduinoClient(connection)
@@ -65,7 +66,7 @@ func checkClientStatus() {
         createClient()
     }
 
-    util.GetContainer().GetLogger().Debugf("gRPC connection status with %v = %s", address, connection.GetState())
+    gocondi.GetContainer().GetLogger().Debugf("gRPC connection status with %v = %s", address, connection.GetState())
 }
 
 func GetTemperature(request arduino_service.ArduinoRequest) (float32, error) {

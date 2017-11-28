@@ -4,6 +4,7 @@ import (
     "database/sql"
     "errors"
     "fmt"
+    "github.com/avegao/gocondi"
     "github.com/avegao/iot-temp-service/arduino"
     "github.com/avegao/iot-temp-service/entity/device"
     "github.com/avegao/iot-temp-service/resource/grpc"
@@ -73,7 +74,7 @@ func (thermostat Thermostat) PowerOff() (bool, error) {
 
 func (thermostat Thermostat) ToGrpcResponse() (*pb.Thermostat, error) {
     const logTag = structLogTag + "ToGrpcResponse"
-    logger := util.GetContainer().GetLogger()
+    logger := gocondi.GetContainer().GetLogger()
     logger.Debugf("%s - START", logTag)
 
     var roomResponse *pb.Room

@@ -1,6 +1,7 @@
 package room
 
 import (
+    "github.com/avegao/gocondi"
     "github.com/avegao/iot-temp-service/entity/zone"
     pb "github.com/avegao/iot-temp-service/resource/grpc/iot_temp"
     "github.com/avegao/iot-temp-service/util"
@@ -26,7 +27,7 @@ func (room Room) GetZone() (*zone.Zone, error) {
 
 func (room Room) ToGrpcResponse() (*pb.Room, error) {
     const logTag = structLogTag + "ToGrpcResponse"
-    logger := util.GetContainer().GetLogger()
+    logger := gocondi.GetContainer().GetLogger()
     logger.Debugf("%s - START", logTag)
 
     zoneObject, err := room.GetZone()

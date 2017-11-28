@@ -1,6 +1,7 @@
 package util
 
 import (
+    "github.com/avegao/gocondi"
     "time"
     "github.com/lib/pq"
     "github.com/sirupsen/logrus"
@@ -18,5 +19,5 @@ type SoftDeletableEntity struct {
 }
 
 func LogQuery(query string, parameters map[string]interface{}) {
-    GetContainer().GetLogger().WithFields(logrus.Fields{"query": query, "parameters": parameters}).Debugf("Query executed")
+    gocondi.GetContainer().GetLogger().WithFields(logrus.Fields{"query": query, "parameters": parameters}).Debugf("Query executed")
 }

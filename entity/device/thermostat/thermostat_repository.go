@@ -2,6 +2,7 @@ package thermostat
 
 import (
     "errors"
+    "github.com/avegao/gocondi"
     "github.com/avegao/iot-temp-service/util"
 )
 
@@ -37,7 +38,7 @@ func (repository Repository) FindOneById(id uint64) (Thermostat, error) {
 
     util.LogQuery(query, map[string]interface{}{"id": id})
 
-    database, err := util.GetContainer().GetDefaultDatabase()
+    database, err := gocondi.GetContainer().GetDefaultDatabase()
 
     if nil != err {
         return Thermostat{}, err
@@ -81,7 +82,7 @@ func (repository Repository) FindAll() ([]Thermostat, error) {
 
     util.LogQuery(query, nil)
 
-    database, err := util.GetContainer().GetDefaultDatabase()
+    database, err := gocondi.GetContainer().GetDefaultDatabase()
 
     if nil != err {
         return *new([]Thermostat), err

@@ -1,6 +1,7 @@
 package util
 
 import (
+    "github.com/avegao/gocondi"
     "os"
     "strconv"
     "fmt"
@@ -19,7 +20,7 @@ func GetBoolParameter(name string, defaultValue bool) bool {
     value, err := strconv.ParseBool(parameter)
 
     if nil != err {
-        GetContainer().GetLogger().Error(err)
+        gocondi.GetContainer().GetLogger().Error(err)
     }
 
     return value
@@ -31,7 +32,7 @@ func GetIntParameter(name string, defaultValue int) int {
     value, err := strconv.ParseInt(parameter, 10, 0)
 
     if nil != err {
-        GetContainer().GetLogger().Error(err)
+        gocondi.GetContainer().GetLogger().Error(err)
     }
 
     return int(value)
@@ -43,7 +44,7 @@ func GetFloatParameter(name string, defaultValue float32) float32 {
     value, err := strconv.ParseFloat(parameter, 0)
 
     if nil != err {
-        GetContainer().GetLogger().Error(err)
+        gocondi.GetContainer().GetLogger().Error(err)
     }
 
     return float32(value)

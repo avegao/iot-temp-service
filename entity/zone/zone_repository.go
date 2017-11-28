@@ -3,6 +3,7 @@ package zone
 import (
     "database/sql"
     "errors"
+    "github.com/avegao/gocondi"
     "github.com/avegao/iot-temp-service/util"
 )
 
@@ -23,14 +24,14 @@ type Repository struct {
 
 func (repository Repository) FindOneById(id uint64) (*Zone, error) {
     const logTag = structLogTag + "FindOneById"
-    logger := util.GetContainer().GetLogger()
+    logger := gocondi.GetContainer().GetLogger()
     logger.Debugf("%s - START", logTag)
 
     query := "SELECT id, name, created_at, updated_at FROM zones WHERE id = $1 AND deleted_at IS NULL"
 
     util.LogQuery(query, map[string]interface{}{"id": id})
 
-    database, err := util.GetContainer().GetDefaultDatabase()
+    database, err := gocondi.GetContainer().GetDefaultDatabase()
 
     if nil != err {
         logger.Debugf("%s - STOP", logTag)
@@ -64,7 +65,7 @@ func (repository Repository) FindAll() (*[]Zone, error) {
 
     util.LogQuery(query, nil)
 
-    database, err := util.GetContainer().GetDefaultDatabase()
+    database, err := gocondi.GetContainer().GetDefaultDatabase()
 
     if nil != err {
         return new([]Zone), err
@@ -107,14 +108,14 @@ func (repository Repository) FindAll() (*[]Zone, error) {
 
 func (repository Repository) FindOneByRoomId(id uint64) (*Zone, error) {
     const logTag = structLogTag + "FindOneById"
-    logger := util.GetContainer().GetLogger()
+    logger := gocondi.GetContainer().GetLogger()
     logger.Debugf("%s - START", logTag)
 
     query := "SELECT id, name, created_at, updated_at FROM zones WHERE id IN (SELECT id_zone FROM rooms WHERE id = $1) AND deleted_at IS NULL"
 
     util.LogQuery(query, map[string]interface{}{"id": id})
 
-    database, err := util.GetContainer().GetDefaultDatabase()
+    database, err := gocondi.GetContainer().GetDefaultDatabase()
 
     if nil != err {
         logger.WithError(err).Debugf("%s - STOP -> Error with database", logTag)

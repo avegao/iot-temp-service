@@ -2,9 +2,9 @@ package default_controller
 
 import (
     "database/sql"
+    "github.com/avegao/gocondi"
     "github.com/avegao/iot-temp-service/entity/device/thermostat"
     pb "github.com/avegao/iot-temp-service/resource/grpc/iot_temp"
-    "github.com/avegao/iot-temp-service/util"
     "github.com/golang/protobuf/ptypes/empty"
     "golang.org/x/net/context"
     "google.golang.org/grpc/codes"
@@ -22,7 +22,7 @@ type Controller struct {
 
 func (controller Controller) FindAll(ctx context.Context, in *empty.Empty) (*pb.ThermostatArray, error) {
     const logTag = structLogTag + "FindAll()"
-    logger := util.GetContainer().GetLogger()
+    logger := gocondi.GetContainer().GetLogger()
     logger.Debugf("%s - START", logTag)
 
     repository := new(thermostat.Repository)
@@ -51,7 +51,7 @@ func (controller Controller) FindAll(ctx context.Context, in *empty.Empty) (*pb.
 
 func (controller Controller) FindOneById(ctx context.Context, in *pb.FindOneByIdReqest) (*pb.Thermostat, error) {
     const logTag = structLogTag + "FindOneById()"
-    logger := util.GetContainer().GetLogger()
+    logger := gocondi.GetContainer().GetLogger()
     logger.Debugf("%s - START", logTag)
 
     repository := new(thermostat.Repository)
@@ -80,7 +80,7 @@ func (controller Controller) FindOneById(ctx context.Context, in *pb.FindOneById
 
 func thermostatsToArrayResponse(thermostats []thermostat.Thermostat) (*pb.ThermostatArray, error) {
     const logTag = packageLogTag + "thermostatsToArrayResponse()"
-    logger := util.GetContainer().GetLogger()
+    logger := gocondi.GetContainer().GetLogger()
     logger.Debugf("%s - START", logTag)
 
     responseArray := make([]*pb.Thermostat, 0)
