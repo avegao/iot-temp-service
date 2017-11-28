@@ -1,10 +1,9 @@
 package device
 
 import (
-    "github.com/avegao/iot-temp-service/util"
-    "github.com/avegao/iot-temp-service/entity/zone"
     "github.com/avegao/iot-temp-service/entity/room"
-    "errors"
+    "github.com/avegao/iot-temp-service/entity/zone"
+    "github.com/avegao/iot-temp-service/util"
 )
 
 type Type int
@@ -31,15 +30,18 @@ type Device struct {
     Address string
     Port    int
     Type    Type
-    Zone    zone.Zone
-    Room    room.Room
+    ZoneID  uint64
+    RoomID  uint64
 }
 
-func (device Device) GetZone() (zone.Zone, error) {
-    return *new(zone.Zone), errors.New("not yet implemented")
+func (device Device) GetZone() (*zone.Zone, error) {
+    repository := new(zone.Repository)
+
+    return repository.FindOneById(device.ZoneID)
 }
 
-func (device Device) GetRoom() (room.Room, error) {
-    return *new(room.Room), errors.New("not yet implemented")
-}
+func (device Device) GetRoom() (*room.Room, error) {
+    repository := new(room.Repository)
 
+    return repository.FindOneById(device.RoomID)
+}

@@ -1,10 +1,12 @@
 package room
 
 import (
+    "database/sql"
     "errors"
     "github.com/avegao/iot-temp-service/util"
-    "database/sql"
 )
+
+const repositoryLogTag = packageLogTag + "repository."
 
 type RepositoryInterface interface {
     FindOneById(uint64 uint64) (Room, error)
@@ -16,34 +18,61 @@ type RepositoryInterface interface {
 
 type Repository struct {
     RepositoryInterface
-    DB sql.DB
 }
 
-func (repository Repository) FindOneById(id uint64) (Room, error) {
+func (repository Repository) FindOneById(id uint64) (*Room, error) {
+    const logTag = repositoryLogTag + "FindOneById"
+    logger := util.GetContainer().GetLogger()
+    logger.Debugf("%s - START", logTag)
+
     query := "SELECT id, name, created_at, updated_at FROM rooms WHERE id = $1 AND deleted_at IS NULL"
 
     util.LogQuery(query, map[string]interface{}{"id": id})
 
-    row := repository.DB.QueryRow(query, id)
+    database, err := util.GetContainer().GetDefaultDatabase()
+
+    if nil != err {
+        logger.Debugf("%s - STOP", logTag)
+
+        if err == sql.ErrNoRows {
+            logger.Debugf("%s - Room not found", logTag)
+        } else {
+            logger.WithError(err).Error(logTag)
+
+            err = nil
+        }
+
+        return nil, err
+    }
+
+    row := database.QueryRow(query, id)
     room := new(Room)
-    err := row.Scan(
+    err = row.Scan(
         &room.ID,
         &room.Name,
         &room.CreatedAt,
         &room.UpdatedAt)
 
-    return *room, err
+    logger.Debugf("%s - END", logTag)
+
+    return room, err
 }
 
-func (repository Repository) FindAll() ([]Room, error) {
+func (repository Repository) FindAll() (*[]Room, error) {
     query := "SELECT id, name, created_at, updated_at FROM rooms WHERE deleted_at IS NULL"
 
     util.LogQuery(query, nil)
 
-    rows, err := repository.DB.Query(query)
+    database, err := util.GetContainer().GetDefaultDatabase()
 
     if nil != err {
-        return *new([]Room), err
+        return new([]Room), err
+    }
+
+    rows, err := database.Query(query)
+
+    if nil != err {
+        return new([]Room), err
     }
 
     defer rows.Close()
@@ -60,7 +89,7 @@ func (repository Repository) FindAll() ([]Room, error) {
             &room.UpdatedAt)
 
         if nil != err {
-            return *new([]Room), err
+            return new([]Room), err
         }
 
         zones = append(zones, *room)
@@ -69,10 +98,10 @@ func (repository Repository) FindAll() ([]Room, error) {
     err = rows.Err()
 
     if nil != err {
-        return *new([]Room), err
+        return new([]Room), err
     }
 
-    return zones, nil
+    return &zones, nil
 }
 
 func (repository Repository) Insert(thermostat Room) (Room, error) {

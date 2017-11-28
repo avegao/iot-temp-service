@@ -18,18 +18,18 @@ services:
       PGSQL_USERNAME: "iot_temp"
       PGSQL_PASSWORD: "C7fJafnH6bQ7Cnmd"
       PGSQL_DATABASE: "iot"
-#    depends_on:
-#      - iot-arduino-temp-service
-#
-#  iot-arduino-temp-service:
-#     image: avegao/iot-arduino-temp-service:local
-#     container_name: iot-arduino-temp-service
-#     command: --debug
-#     networks:
-#       - iot-arduino-temp
+    depends_on:
+      - iot-arduino-temp-service
+
+  iot-arduino-temp-service:
+     image: avegao/iot-arduino-temp-service:local
+     container_name: iot-arduino-temp-service
+     command: --debug
+     networks:
+       - iot-arduino-temp
 
 networks:
   iot-temp:
   iot-arduino-temp:
-    external:
-      name: iotarduino_iot-arduino-temp
+#    external:
+#      name: iotarduino_iot-arduino-temp

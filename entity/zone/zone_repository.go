@@ -1,10 +1,12 @@
 package zone
 
 import (
+    "database/sql"
     "errors"
     "github.com/avegao/iot-temp-service/util"
-    "database/sql"
 )
+
+const structLogTag = packageLogTag + "repository."
 
 type repositoryInterface interface {
     Delete(thermostat Zone) (error)
@@ -17,34 +19,61 @@ type repositoryInterface interface {
 
 type Repository struct {
     repositoryInterface
-    DB sql.DB
 }
 
-func (repository Repository) FindOneById(id uint64) (Zone, error) {
+func (repository Repository) FindOneById(id uint64) (*Zone, error) {
+    const logTag = structLogTag + "FindOneById"
+    logger := util.GetContainer().GetLogger()
+    logger.Debugf("%s - START", logTag)
+
     query := "SELECT id, name, created_at, updated_at FROM zones WHERE id = $1 AND deleted_at IS NULL"
 
     util.LogQuery(query, map[string]interface{}{"id": id})
 
-    row := repository.DB.QueryRow(query, id)
+    database, err := util.GetContainer().GetDefaultDatabase()
+
+    if nil != err {
+        logger.Debugf("%s - STOP", logTag)
+
+        if err == sql.ErrNoRows {
+            logger.Debugf("%s - Zone not found", logTag)
+        } else {
+            logger.WithError(err).Error(logTag)
+
+            err = nil
+        }
+
+        return nil, err
+    }
+
+    row := database.QueryRow(query, id)
     zone := new(Zone)
-    err := row.Scan(
+    err = row.Scan(
         &zone.ID,
         &zone.Name,
         &zone.CreatedAt,
         &zone.UpdatedAt)
 
-    return *zone, err
+    logger.Debugf("%s - END", logTag)
+
+    return zone, err
 }
 
-func (repository Repository) FindAll() ([]Zone, error) {
+func (repository Repository) FindAll() (*[]Zone, error) {
     query := "SELECT id, name, created_at, updated_at FROM zones WHERE deleted_at IS NULL"
 
     util.LogQuery(query, nil)
 
-    rows, err := repository.DB.Query(query)
+    database, err := util.GetContainer().GetDefaultDatabase()
 
     if nil != err {
-        return *new([]Zone), err
+        return new([]Zone), err
+    }
+
+    rows, err := database.Query(query)
+
+    if nil != err {
+        return new([]Zone), err
     }
 
     defer rows.Close()
@@ -61,7 +90,7 @@ func (repository Repository) FindAll() ([]Zone, error) {
             &zone.UpdatedAt)
 
         if nil != err {
-            return *new([]Zone), err
+            return new([]Zone), err
         }
 
         zones = append(zones, *zone)
@@ -70,26 +99,46 @@ func (repository Repository) FindAll() ([]Zone, error) {
     err = rows.Err()
 
     if nil != err {
-        return *new([]Zone), err
+        return new([]Zone), err
     }
 
-    return zones, nil
+    return &zones, nil
 }
 
-func (repository Repository) FindOneByRoomId(id uint64) (Zone, error) {
+func (repository Repository) FindOneByRoomId(id uint64) (*Zone, error) {
+    const logTag = structLogTag + "FindOneById"
+    logger := util.GetContainer().GetLogger()
+    logger.Debugf("%s - START", logTag)
+
     query := "SELECT id, name, created_at, updated_at FROM zones WHERE id IN (SELECT id_zone FROM rooms WHERE id = $1) AND deleted_at IS NULL"
 
     util.LogQuery(query, map[string]interface{}{"id": id})
 
-    row := repository.DB.QueryRow(query, id)
+    database, err := util.GetContainer().GetDefaultDatabase()
+
+    if nil != err {
+        logger.WithError(err).Debugf("%s - STOP -> Error with database", logTag)
+
+        return nil, err
+    }
+
+    row := database.QueryRow(query, id)
     zone := new(Zone)
-    err := row.Scan(
+    err = row.Scan(
         &zone.ID,
         &zone.Name,
         &zone.CreatedAt,
         &zone.UpdatedAt)
 
-    return *zone, err
+    if nil != err {
+        logger.WithError(err).Debugf("%s - STOP -> Error reading row", logTag)
+
+        return nil, err
+    }
+
+    logger.Debugf("%s - END", logTag)
+
+    return zone, nil
 }
 
 func (repository Repository) Insert(thermostat Zone) (Zone, error) {

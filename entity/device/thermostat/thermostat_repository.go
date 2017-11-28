@@ -28,14 +28,16 @@ func (repository Repository) FindOneById(id uint64) (Thermostat, error) {
             "auto, " +
             "min_temperature, " +
             "created_at, " +
-            "updated_at " +
+            "updated_at, " +
+            "id_zone, " +
+            "id_room " +
             "FROM devices_thermostats " +
             "WHERE id = $1 " +
             "AND deleted_at IS NULL"
 
     util.LogQuery(query, map[string]interface{}{"id": id})
 
-    database, err := util.GetContainer().GetDatabase("pgsql")
+    database, err := util.GetContainer().GetDefaultDatabase()
 
     if nil != err {
         return Thermostat{}, err
@@ -52,13 +54,75 @@ func (repository Repository) FindOneById(id uint64) (Thermostat, error) {
         &thermostat.Auto,
         &thermostat.MinTemperature,
         &thermostat.CreatedAt,
-        &thermostat.UpdatedAt)
+        &thermostat.UpdatedAt,
+        &thermostat.ZoneID,
+        &thermostat.RoomID,
+    )
 
     return *thermostat, err
 }
 
 func (repository Repository) FindAll() ([]Thermostat, error) {
-    return *new([]Thermostat), errors.New("not yet implemented")
+    query :=
+        "SELECT " +
+            "id, " +
+            "name, " +
+            "address, " +
+            "port, " +
+            "type, " +
+            "auto, " +
+            "min_temperature, " +
+            "created_at, " +
+            "updated_at, " +
+            "id_zone, " +
+            "id_room " +
+            "FROM devices_thermostats " +
+            "WHERE deleted_at IS NULL"
+
+    util.LogQuery(query, nil)
+
+    database, err := util.GetContainer().GetDefaultDatabase()
+
+    if nil != err {
+        return *new([]Thermostat), err
+    }
+
+    rows, err := database.Query(query)
+
+    if nil != err {
+        return *new([]Thermostat), err
+    }
+
+    defer rows.Close()
+
+    thermostats := make([]Thermostat, 0)
+
+    for rows.Next() {
+        thermostat := new(Thermostat)
+        err = rows.Scan(
+            &thermostat.ID,
+            &thermostat.Name,
+            &thermostat.Address,
+            &thermostat.Port,
+            &thermostat.Type,
+            &thermostat.Auto,
+            &thermostat.MinTemperature,
+            &thermostat.CreatedAt,
+            &thermostat.UpdatedAt,
+            &thermostat.ZoneID,
+            &thermostat.RoomID,
+        )
+
+        thermostats = append(thermostats, *thermostat)
+    }
+
+    err = rows.Err()
+
+    if nil != err {
+        return *new([]Thermostat), err
+    }
+
+    return thermostats, nil
 }
 
 func (repository Repository) Insert(thermostat Thermostat) (Thermostat, error) {

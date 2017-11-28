@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package com.avegao.iot.temp.service;
+
+option go_package = "github.com/avegao/iot-temp-service/resource/grpc;iottempservice";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+service ThermostatService {
+    rpc FindAll(google.protobuf.Empty) returns (ThermostatArray) {}
+    rpc FindOneById(FindOneByIdReqest) returns (Thermostat) {}
+}
+
+message Thermostat {
+    enum DeviceType {
+        OTHER = 0;
+        ARDUINO = 1;
+        RASPBERRY_PI = 2;
+    }
+
+    uint64 id = 1;
+    string name = 2;
+    string address = 3;
+    int32 port = 4;
+    DeviceType type = 5;
+    Zone zone = 6;
+    Room room = 7;
+    google.protobuf.Timestamp created_at = 8;
+    google.protobuf.Timestamp updated_at = 9;
+    google.protobuf.Timestamp deleted_at = 10;
+}
+
+message Zone {
+    uint64 id = 1;
+    string name = 2;
+    google.protobuf.Timestamp created_at = 3;
+    google.protobuf.Timestamp updated_at = 4;
+    google.protobuf.Timestamp deleted_at = 5;
+}
+
+message Room {
+    uint64 id = 1;
+    string name = 2;
+    Zone zone = 3;
+    google.protobuf.Timestamp created_at = 4;
+    google.protobuf.Timestamp updated_at = 5;
+    google.protobuf.Timestamp deleted_at = 6;
+}
+
+message FindOneByIdReqest {
+    uint64 id = 1;
+}
+
+message ThermostatArray {
+    repeated Thermostat thermostats = 1;
+}
