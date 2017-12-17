@@ -8,8 +8,9 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
 
 service ThermostatService {
-    rpc FindAll(google.protobuf.Empty) returns (ThermostatArray) {}
-    rpc FindOneById(FindOneByIdReqest) returns (Thermostat) {}
+    rpc FindAll (google.protobuf.Empty) returns (ThermostatArray) {}
+    rpc FindOneById (ByIdReqest) returns (Thermostat) {}
+    rpc GetTemperatureById(ByIdReqest) returns (GetTemperatureResponse) {}
 }
 
 message Thermostat {
@@ -48,10 +49,14 @@ message Room {
     google.protobuf.Timestamp deleted_at = 6;
 }
 
-message FindOneByIdReqest {
+message ByIdReqest {
     uint64 id = 1;
 }
 
 message ThermostatArray {
     repeated Thermostat thermostats = 1;
+}
+
+message GetTemperatureResponse {
+    float temperature = 1;
 }

@@ -49,7 +49,7 @@ func (controller Controller) FindAll(ctx context.Context, in *empty.Empty) (*pb.
     return response, nil
 }
 
-func (controller Controller) FindOneById(ctx context.Context, in *pb.FindOneByIdReqest) (*pb.Thermostat, error) {
+func (controller Controller) FindOneById(ctx context.Context, in *pb.ByIdReqest) (*pb.Thermostat, error) {
     const logTag = structLogTag + "FindOneById()"
     logger := gocondi.GetContainer().GetLogger()
     logger.Debugf("%s - START", logTag)
@@ -72,6 +72,47 @@ func (controller Controller) FindOneById(ctx context.Context, in *pb.FindOneById
 
         return nil, status.Error(codes.Internal, err.Error())
     }
+
+    logger.Debugf("%s - END", logTag)
+
+    return response, nil
+}
+
+func (controller Controller) GetTemperatureById(ctx context.Context, in *pb.ByIdReqest) (*pb.GetTemperatureResponse, error) {
+    const logTag = structLogTag + "GetTemperatureById()"
+    logger := gocondi.GetContainer().GetLogger()
+    logger.Debugf("%s - START", logTag)
+
+    repository := new(thermostat.Repository)
+    thermostatObject, err := repository.FindOneById(in.Id)
+
+    if nil != err {
+        var code codes.Code
+
+        if nil != sql.ErrNoRows {
+            logger.Debugf("%s - STOP -> Error ", logTag)
+
+            code = codes.NotFound
+        } else {
+            logger.WithError(err).Error(logTag)
+            logger.WithError(err).Debugf("%s - STOP -> Error ", logTag)
+
+            code = codes.Internal
+        }
+
+        return nil, status.Error(code, err.Error())
+    }
+
+    temperature, err := thermostatObject.GetTemperature()
+
+    if nil != err {
+        logger.WithError(err).Error(logTag)
+        logger.WithError(err).Debugf("%s - STOP -> Error ", logTag)
+
+        return nil, status.Error(codes.Internal, err.Error())
+    }
+
+    response := &pb.GetTemperatureResponse{Temperature: temperature}
 
     logger.Debugf("%s - END", logTag)
 

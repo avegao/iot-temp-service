@@ -2,10 +2,10 @@ package arduino
 
 import (
     "github.com/avegao/gocondi"
-    "google.golang.org/grpc"
     "github.com/avegao/iot-temp-service/resource/grpc"
-    "golang.org/x/net/context"
     "github.com/avegao/iot-temp-service/util"
+    "golang.org/x/net/context"
+    "google.golang.org/grpc"
 )
 
 var (
@@ -15,24 +15,8 @@ var (
 )
 
 func createConnection() {
-    var grpcOptions []grpc.DialOption
-
-    //if *tls {
-    //    if *caFile == "" {
-    //        *caFile = testdata.Path("ca.pem")
-    //    }
-    //    grpcCredentials, err := credentials.NewClientTLSFromFile(*caFile, *serverHostOverride)
-    //    if err != nil {
-    //        log.Fatalf("Failed to create TLS credentials %v", err)
-    //    }
-    //    opts = append(opts, grpc.WithTransportCredentials(grpcCredentials))
-    //} else {
-    //    opts = append(opts, grpc.WithInsecure())
-    //}
-
-    grpcOptions = append(grpcOptions, grpc.WithInsecure())
-    address = util.FromGeneric(gocondi.GetContainer().GetParameter("iot_arduino_temp_server_address"))
-    newConnection, err := grpc.Dial(address, grpcOptions...)
+    address = util.FromGeneric(gocondi.GetContainer().GetStringParameter("iot_arduino_temp_server_address"))
+    newConnection, err := grpc.Dial(address, grpc.WithInsecure())
 
     if nil != err {
         gocondi.GetContainer().GetLogger().WithError(err).Fatalf("Fail to connect with %s", address)
